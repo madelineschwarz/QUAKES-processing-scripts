@@ -11,7 +11,7 @@ pip install opencv-python-headless
 
 pip install piexif
 
-pip install laspy
+pip install laspy[lazrs,laszip]
 
 #----------------------------------------------------------
 # Script list

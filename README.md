@@ -11,6 +11,8 @@ pip install opencv-python-headless
 
 pip install piexif
 
+pip install laspy
+
 #----------------------------------------------------------
 # Script list
 cloudDetect.py -- filter out images that contain clouds

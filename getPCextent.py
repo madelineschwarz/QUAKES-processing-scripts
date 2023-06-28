@@ -25,4 +25,4 @@ min_z, max_z = header.min[2], header.max[2]
 # Print the geographic extent
 print("Geographic Extent of Point Cloud:")
 print("Lower Lon:", min_x, "Lower Lat:", min_y)
-print("Upper Lon", max_x, "Upper Lat", min_y)
+print("Upper Lon", max_x, "Upper Lat", max_y)

@@ -15,10 +15,10 @@ pip install laspy[lazrs,laszip]
 
 #----------------------------------------------------------
 # Script list
-cloudDetect.py -- filter out images that contain clouds
+cloudDetect.py -- filter out images that contain clouds (hit or miss, sensitive to chosen threshold %)
 
 greyImages.py  -- convert images to greyscale while retaining EXIF GPS metadata
 
 generateRef.py -- create a geotag reference txt file for images using QUAKES camera orientations
 
-getPCextent.py -- load a point cloud .LAZ file and get the lat/long coords of its extent
+getPCextent.py -- load a point cloud .LAZ file and get the lat/long coords of its extent for ref data search on OpenTopography

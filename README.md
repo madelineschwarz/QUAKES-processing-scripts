@@ -15,7 +15,7 @@ pip install laspy[lazrs,laszip]
 
 #----------------------------------------------------------
 # Script list
-cloudDetect.py -- filter out images that contain clouds (hit or miss, sensitive to chosen threshold %)
+cloudDetect.py -- filter out images that contain clouds (note: sensitive to threshold % parameter)
 
 greyImages.py  -- convert images to greyscale while retaining EXIF GPS metadata
 

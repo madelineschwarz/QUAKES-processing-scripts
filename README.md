@@ -1,5 +1,5 @@
-# QUAKES-photogrammetry
-Scripts for processing QUAKES-I stereo photogrammetry data
+# QUAKES-processing-scripts
+Scripts for processing QUAKES-I stereo photogrammetry data in Python
 
 #----------------------------------------------------------
 # Python Setup Information:

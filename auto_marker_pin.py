@@ -1,4 +1,5 @@
-# Automatically 'pin' markers to images in Agisoft Metashape
+# Run in Agisoft metashape Python console
+# Automatically 'pin' markers to images (during camera alignment)
 # source: https://www.agisoft.com/forum/index.php?topic=13543.0
 # Note: only use if default marker positioning is correct 
 import Metashape

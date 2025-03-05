@@ -3,7 +3,7 @@ Scripts for processing QUAKES-I stereo photogrammetry data in Python
 
 #----------------------------------------------------------
 # Python Setup Information:
-Python 3.10
+Python 3.8
 
 pip install Pillow 
 

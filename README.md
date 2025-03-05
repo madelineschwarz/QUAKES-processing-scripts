@@ -22,3 +22,5 @@ greyImages.py  -- convert images to greyscale while retaining EXIF GPS metadata
 generateRef.py -- create a geotag reference txt file for images using QUAKES camera orientations
 
 getPCextent.py -- load a point cloud .LAZ file and get the lat/long coords of its extent for ref data search on OpenTopography
+
+coreg_image_utils.py -- functions for handling images for co-registration with CV2

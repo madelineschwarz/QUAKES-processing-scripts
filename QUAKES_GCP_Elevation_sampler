@@ -1,0 +1,127 @@
+// Maddie Schwarz
+//4/4/2025 
+// This GEE script tests the elevation data source of Google Earth Basemaps (1m 3DEP, 10m 3DEP, 30m SRTM)
+// How to use: 
+//        Option 1: Run the tool and use the mouse to click on a point within the map to see
+//                  the the elevation values provided by 1m 3DEP, 10m 3DEP, and 30m SRTM imagery for that location. 
+//        Option 2: Paste latitude longitude coordinates in the 'var point' brackets and run the tool
+//                  to see elevation values provided by 1m 3DEP, 10m 3DEP, and 30m SRTM imagery for that location. 
+//        
+//        Compare the elevation values printed to those provided in Google Earth Imagery-- whichever value matches
+//        indicates Google Earth is using that elevation source of that image. 
+
+// Reason for tool: Google Earth imagery is extremely useful and can be used to sample lat/long and elevation values for
+//                  external georeferencing points (GCPs). Google Earth imagery consists of image mosaics from different sources.
+//                  For elevation data, Google Earth uses SRTM and USGS 3DEP datasets which vary greatly in coverage and resolution. 
+//                  Google Earth does not always specify the source used for elevation values. 
+//                  Use this tool to determine where Google Earth is sourcing its elevation values. 
+//                
+// Test point -- Enter Lat Long Values for a Sample point (e.g. GCP 9 from DV Line 1 QUAKES-I data)
+var point = ee.Geometry.Point([-117.3808194220083, 36.296430906384735]);
+//Map.setCenter(point);
+Map.addLayer(point,
+             {'color': 'black'},
+             'Geometry [black]: point');
+
+//----------------------------------------------------------------------------------
+// Load 3DEP 1m
+var m_dataset = ee.ImageCollection('USGS/3DEP/1m');
+//var mosaic = dataset.filterBounds(geometry5).mosaic();
+//print('projection: ', mosaic.projection()); // Print data projection (should be WGS84)
+
+var visualization = {
+  min: 0,
+  max: 3000,
+  palette: [
+    '3ae237', 'b5e22e', 'd6e21f', 'fff705', 'ffd611', 'ffb613', 'ff8b13',
+    'ff6e08', 'ff500d', 'ff0000', 'de0101', 'c21301', '0602ff', '235cb1',
+    '307ef3', '269db1', '30c8e2', '32d3ef', '3be285', '3ff38f', '86e26f'
+  ],
+};
+
+Map.addLayer(m_dataset, visualization, '3DEP elevation 1m');
+// Add the FeatureCollection to the map
+//----------------------------------------------------------------------------------
+
+// USGS 3DEP 10m map
+var dataset = ee.Image('USGS/3DEP/10m')
+var elevation_3DEP10m = dataset.select('elevation');
+
+Map.setCenter(-112.8598, 36.2841, 10);
+Map.addLayer(elevation_3DEP10m, {min: 0, max: 3000,   palette: [
+    '3ae237', 'b5e22e', 'd6e21f', 'fff705', 'ffd611', 'ffb613', 'ff8b13',
+    'ff6e08', 'ff500d', 'ff0000', 'de0101', 'c21301', '0602ff', '235cb1',
+    '307ef3', '269db1', '30c8e2', '32d3ef', '3be285', '3ff38f', '86e26f'
+  ],
+}, 'elevation_3dep_10m');
+
+//----------------------------------------------------------------------------------
+// 30m SRTM map
+var srtm_dataset = ee.Image('USGS/SRTMGL1_003');
+var elevation_srtm = srtm_dataset.select('elevation');
+
+Map.setCenter(-112.8598, 36.2841, 10);
+Map.addLayer(elevation_srtm, {min: 0, max: 3000,   palette: [
+    '3ae237', 'b5e22e', 'd6e21f', 'fff705', 'ffd611', 'ffb613', 'ff8b13',
+    'ff6e08', 'ff500d', 'ff0000', 'de0101', 'c21301', '0602ff', '235cb1',
+    '307ef3', '269db1', '30c8e2', '32d3ef', '3be285', '3ff38f', '86e26f'
+  ],
+}, 'elevation_srtm_30m')
+
+//----------------------------------------------------------------------------------
+/// Sample the elevation at the points (from 30m SRTM dem)
+
+
+var sampledSRTMElev = elevation_srtm.sample({
+  region: point,
+  scale: 30,  // 30m is the native resolution for SRTM
+  geometries: true  // optional, include point geometry in result
+});
+
+
+var result = ee.Algorithms.If(
+  sampledSRTMElev.size().gt(0),
+  sampledSRTMElev.first().get('elevation'),
+  'No elevation data available at this location.'
+);
+
+print('SRTM elevation: ', result);
+
+//----------------------------------------------------------------------------------
+/// Sample the elevation at the points (from 3DEP 1m dem)
+var sampled_3DEP1m_elev = m_dataset.select('elevation').mean().sample({
+  region: point,
+  scale: 1,
+  geometries: true 
+});
+
+
+var result = ee.Algorithms.If(
+  sampled_3DEP1m_elev.size().gt(0),
+  sampled_3DEP1m_elev.first().get('elevation'),
+  'No elevation data available at this location.'
+);
+
+print('3DEP 1m elevation:', result)
+//print('3DEP 1m elevation: ', sampled_3DEP1m_elev.first().get('elevation'));
+
+//----------------------------------------------------------------------------------
+/// Sample the elevation at the points (from 3DEP 10m dem)
+var sampled_3DEP10m_elev = dataset.sample({
+  region: point,
+  scale: 10,  // 30m is the native resolution for SRTM
+  geometries: true  // optional, include point geometry in result
+});
+
+var result = ee.Algorithms.If(
+  sampled_3DEP10m_elev.size().gt(0),
+  sampled_3DEP10m_elev.first().get('elevation'),
+  'No elevation data available at this location.'
+);
+
+print('3DEP 10m elevation: ', result);
+//----------------------------------------------------------------------------------
+
+// Extract elevation values from the sampled points
+//var elevList = sampledElev.aggregate_array('elevation');
+Map.setCenter(-117.3808194220083, 36.296430906384735,15)

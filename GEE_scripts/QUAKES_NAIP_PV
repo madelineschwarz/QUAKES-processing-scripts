@@ -1,0 +1,61 @@
+// GEE Script for accessing NAIP imagery for pre and post 2022 QUAKES-I acqusition
+
+// AOI Defining portion of PV site
+var geometry = 
+    /* color: #d63000 */
+    /* shown: false */
+    /* displayProperties: [
+      {
+        "type": "rectangle"
+      }
+    ] */
+    ee.Geometry.Polygon(
+        [[[-117.43878000074552, 36.419621344231516],
+          [-117.43878000074552, 36.26697144200091],
+          [-117.27398507887052, 36.26697144200091],
+          [-117.27398507887052, 36.419621344231516]]], null, false);
+
+// NAIP 2009
+var naip2009 = ee.ImageCollection("USDA/NAIP/DOQQ")
+  .filterBounds(geometry)
+  .filterDate('2009-01-01', '2009-12-31')
+  .mosaic()
+  .clip(geometry);
+
+// NAIP 2022
+var naip2022 = ee.ImageCollection("USDA/NAIP/DOQQ")
+  .filterBounds(geometry)
+  .filterDate('2022-01-01', '2022-12-31')
+  .mosaic()
+  .clip(geometry);
+
+var vis = {bands: ['R', 'G', 'B'], min: 0, max: 255};
+
+// Add to map
+Map.centerObject(geometry);
+Map.addLayer(naip2009, vis, 'NAIP 2009');
+Map.addLayer(naip2022, vis, 'NAIP 2022');
+
+// Export 2009
+Export.image.toDrive({
+  image: naip2009,
+  description: 'NAIP_2009',
+  folder: 'GEE_NAIP',
+  fileNamePrefix: 'NAIP_2009',
+  region: geometry,
+  scale: 1,            // NAIP native resolution (1 m)
+  crs: 'EPSG:4326',    // optional; remove if you want native projection
+  maxPixels: 1e13
+});
+
+// Export 2022
+Export.image.toDrive({
+  image: naip2022,
+  description: 'NAIP_2022',
+  folder: 'GEE_NAIP',
+  fileNamePrefix: 'NAIP_2022',
+  region: geometry,
+  scale: 1,
+  crs: 'EPSG:4326',
+  maxPixels: 1e13
+});
